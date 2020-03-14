@@ -123,7 +123,7 @@ static void mgos_pppos_at_cmd(int uart_no, const char *cmd) {
   LOG(LL_VERBOSE_DEBUG, (">> %s", cmd));
   mgos_uart_write(uart_no, cmd, strlen(cmd));
   if (strcmp(cmd, "+++") != 0) {
-    mgos_uart_write(uart_no, "\r\n", 2);
+    mgos_uart_write(uart_no, "\r", 1);
   }
 }
 
@@ -613,10 +613,10 @@ static void mgos_pppos_dispatch_once(struct mgos_pppos_data *pd) {
       LOG(LL_INFO, ("Connecting (UART%d, APN '%s')...", pd->cfg->uart_no,
                     (apn ? apn : "")));
       mbuf_remove(&pd->data, pd->data.len);
-      add_cmd(pd, mgos_pppos_at_cb, "AT\r\n");
-      add_cmd(pd, NULL, "ATH\r\n");
-      add_cmd(pd, NULL, "ATE0\r\n");
-      add_cmd(pd, mgos_pppos_ati_cb, "ATI\r\n");
+      add_cmd(pd, mgos_pppos_at_cb, "AT");
+      add_cmd(pd, NULL, "ATH");
+      add_cmd(pd, NULL, "ATE0");
+      add_cmd(pd, mgos_pppos_ati_cb, "ATI");
       if (!pd->baud_ok) {
         struct mgos_uart_config ucfg;
         bool need_ifr = true, need_ifc = true;
@@ -626,27 +626,28 @@ static void mgos_pppos_dispatch_once(struct mgos_pppos_data *pd) {
               (pd->cfg->fc_enable != (ucfg.baud_rate == MGOS_UART_FC_HW));
         }
         if (need_ifr) {
-          add_cmd(pd, mgos_pppos_ifr_cb, "AT+IPR=%d\r\n", pd->cfg->baud_rate);
+          add_cmd(pd, mgos_pppos_ifr_cb, "AT+IPR=%d", pd->cfg->baud_rate);
         }
         if (need_ifc) {
           int ifc = (pd->cfg->fc_enable ? 2 : 0);
-          add_cmd(pd, mgos_pppos_ifc_cb, "AT+IFC=%d,%d\r\n", ifc, ifc);
+          add_cmd(pd, mgos_pppos_ifc_cb, "AT+IFC=%d,%d", ifc, ifc);
         }
       }
-      add_cmd(pd, mgos_pppos_gsn_cb, "AT+GSN\r\n");
-      add_cmd(pd, mgos_pppos_cimi_cb, "AT+CIMI\r\n");
-      add_cmd(pd, mgos_pppos_ccid_cb, "AT+CCID\r\n");
-      add_cmd(pd, mgos_pppos_cpin_cb, "AT+CPIN?\r\n");
-      add_cmd(pd, NULL, "AT+CFUN=1\r\n"); /* Full functionality */
-      add_cmd(pd, mgos_pppos_creg_cb, "AT+CREG?\r\n");
-      add_cmd(pd, mgos_pppos_at_cb, "AT+COPS=3,0\r\n");
-      add_cmd(pd, mgos_pppos_cops_cb, "AT+COPS?\r\n");
-      add_cmd(pd, mgos_pppos_csq_cb, "AT+CSQ\r\n");
-      add_cmd(pd, NULL, "AT+CREG=0\r\n"); /* Disable unsolicited reports */
-      add_cmd(pd, NULL, "AT+CGATT=1\r\n"); /* att */
-      add_cmd(pd, NULL, "AT+CGDCONT=1,\"IP\",\"%s\"\r\n", pd->cfg->apn);
-      add_cmd(pd, NULL, "AT+CGACT=1,1\r\n"); /* act */
-      add_cmd(pd, mgos_pppos_atd_cb, "ATDT*99***1#\r\n");
+      add_cmd(pd, mgos_pppos_gsn_cb, "AT+GSN");
+      add_cmd(pd, mgos_pppos_cimi_cb, "AT+CIMI");
+      add_cmd(pd, mgos_pppos_ccid_cb, "AT+CCID");
+      add_cmd(pd, mgos_pppos_cpin_cb, "AT+CPIN?");
+      add_cmd(pd, NULL, "AT+CFUN=1,1"); /* Full functionality */
+      add_cmd(pd, mgos_pppos_creg_cb, "AT+CREG?");
+      add_cmd(pd, mgos_pppos_at_cb, "AT+COPS=3,0");
+      add_cmd(pd, mgos_pppos_cops_cb, "AT+COPS?");
+      add_cmd(pd, mgos_pppos_csq_cb, "AT+CSQ");
+      add_cmd(pd, mgos_pppos_at_cb, "AT+CREG=0"); /* Disable unsolicited reports */
+      add_cmd(pd, mgos_pppos_at_cb, "AT+CGATT=1"); /* att */
+      add_cmd(pd, mgos_pppos_at_cb, "AT+CGDCONT=1,\"IP\",\"%s\"", pd->cfg->apn);
+      add_cmd(pd, mgos_pppos_at_cb, "AT+CGACT=1,1"); /* act */
+#add_cmd(pd, NULL, "AT+CGDATA=\"PPP\",1"); /* act */
+      add_cmd(pd, mgos_pppos_atd_cb, "ATDT*99***1#");
       mgos_pppos_set_state(pd, PPPOS_CMD);
       (void) apn;
       break;
@@ -902,7 +903,7 @@ bool mgos_pppos_run_cmds(int if_instance, const struct mgos_pppos_cmd *cmds) {
   }
   if (pd == NULL || pd->cmds != NULL) return false;
   /* Insert ATE0 at the beginning. */
-  add_cmd2(pd, strdup("ATE0\r\n"), NULL, NULL);
+  add_cmd2(pd, strdup("ATE0"), NULL, NULL);
   const struct mgos_pppos_cmd *cmd = cmds;
   while (true) {
     if (cmd->cmd != NULL) {

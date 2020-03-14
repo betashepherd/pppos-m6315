@@ -637,7 +637,7 @@ static void mgos_pppos_dispatch_once(struct mgos_pppos_data *pd) {
       add_cmd(pd, mgos_pppos_cimi_cb, "AT+CIMI");
       add_cmd(pd, mgos_pppos_ccid_cb, "AT+CCID");
       add_cmd(pd, mgos_pppos_cpin_cb, "AT+CPIN?");
-      add_cmd(pd, NULL, "AT+CFUN=1,0"); /* Full functionality */
+      add_cmd(pd, NULL, "AT+CFUN=1"); /* Full functionality */
       add_cmd(pd, mgos_pppos_creg_cb, "AT+CREG?");
       add_cmd(pd, mgos_pppos_at_cb, "AT+COPS=3,0");
       add_cmd(pd, mgos_pppos_cops_cb, "AT+COPS?");

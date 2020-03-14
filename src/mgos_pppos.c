@@ -39,7 +39,7 @@
 #include "mgos_uart.h"
 #include "mgos_utils.h"
 
-#define AT_CMD_TIMEOUT 10.0
+#define AT_CMD_TIMEOUT 5.0
 
 enum mgos_pppos_state {
   PPPOS_IDLE = 0,

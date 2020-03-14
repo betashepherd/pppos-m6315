@@ -646,8 +646,8 @@ static void mgos_pppos_dispatch_once(struct mgos_pppos_data *pd) {
       add_cmd(pd, mgos_pppos_at_cb, "AT+CGATT=1"); /* att */
       add_cmd(pd, mgos_pppos_at_cb, "AT+CGDCONT=1,\"IP\",\"%s\"", pd->cfg->apn);
       add_cmd(pd, mgos_pppos_at_cb, "AT+CGACT=1,1"); /* act */
-#add_cmd(pd, NULL, "AT+CGDATA=\"PPP\",1"); /* act */
-      add_cmd(pd, mgos_pppos_atd_cb, "ATDT*99***1#");
+      add_cmd(pd, mgos_pppos_atd_cb, "AT+CGDATA=\"PPP\",1"); /* act */
+#add_cmd(pd, mgos_pppos_atd_cb, "ATDT*99***1#");
       mgos_pppos_set_state(pd, PPPOS_CMD);
       (void) apn;
       break;

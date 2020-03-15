@@ -123,7 +123,7 @@ static void mgos_pppos_at_cmd(int uart_no, const char *cmd) {
   LOG(LL_VERBOSE_DEBUG, (">> %s", cmd));
   mgos_uart_write(uart_no, cmd, strlen(cmd));
   if (strcmp(cmd, "+++") != 0) {
-    mgos_uart_write(uart_no, "\r", 1);
+    mgos_uart_write(uart_no, "\r\n", 2);
   }
 }
 
@@ -642,12 +642,12 @@ static void mgos_pppos_dispatch_once(struct mgos_pppos_data *pd) {
       add_cmd(pd, mgos_pppos_at_cb, "AT+COPS=3,0");
       add_cmd(pd, mgos_pppos_cops_cb, "AT+COPS?");
       add_cmd(pd, mgos_pppos_csq_cb, "AT+CSQ");
-      add_cmd(pd, mgos_pppos_at_cb, "AT+CREG=0"); /* Disable unsolicited reports */
-      add_cmd(pd, mgos_pppos_at_cb, "AT+CGATT=1"); /* att */
-      add_cmd(pd, mgos_pppos_at_cb, "AT+CGDCONT=1,\"IP\",\"%s\"", pd->cfg->apn);
-      add_cmd(pd, mgos_pppos_at_cb, "AT+CGACT=1,1"); /* act */
-      add_cmd(pd, mgos_pppos_atd_cb, "AT+CGDATA=\"PPP\",1"); /* act */
-      //add_cmd(pd, mgos_pppos_atd_cb, "ATDT*99***1#");
+      add_cmd(pd, NULL, "AT+CREG=0"); /* Disable unsolicited reports */
+      //add_cmd(pd, mgos_pppos_at_cb, "AT+CGATT=1"); /* att */
+      add_cmd(pd, NULL, "AT+CGDCONT=1,\"IP\",\"%s\"", pd->cfg->apn);
+      //add_cmd(pd, mgos_pppos_at_cb, "AT+CGACT=1,1"); /* act */
+      //add_cmd(pd, mgos_pppos_atd_cb, "AT+CGDATA=\"PPP\",1"); /* act */
+      add_cmd(pd, mgos_pppos_atd_cb, "ATDT*99***1#");
       mgos_pppos_set_state(pd, PPPOS_CMD);
       (void) apn;
       break;

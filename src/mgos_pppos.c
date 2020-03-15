@@ -643,11 +643,10 @@ static void mgos_pppos_dispatch_once(struct mgos_pppos_data *pd) {
       add_cmd(pd, mgos_pppos_cops_cb, "AT+COPS?");
       add_cmd(pd, mgos_pppos_csq_cb, "AT+CSQ");
       add_cmd(pd, NULL, "AT+CREG=0"); /* Disable unsolicited reports */
-      //add_cmd(pd, mgos_pppos_at_cb, "AT+CGATT=1"); /* att */
-      add_cmd(pd, NULL, "AT+CGDCONT=1,\"IP\",\"%s\"", pd->cfg->apn);
-      //add_cmd(pd, mgos_pppos_at_cb, "AT+CGACT=1,1"); /* act */
-      //add_cmd(pd, mgos_pppos_atd_cb, "AT+CGDATA=\"PPP\",1"); /* act */
-      add_cmd(pd, mgos_pppos_atd_cb, "ATDT*99***1#");
+      add_cmd(pd, NULL, "AT+QIDEACT");// INIT
+      add_cmd(pd, NULL, "AT+QIREGAPP=\"%s\"", pd->cfg->apn);// REG APP
+      add_cmd(pd, mgos_pppos_atd_cb, "AT+QIACT");// ACT
+      add_cmd(pd, mgos_pppos_atd_cb, "AT+QIMODE=1"); // QIMODE = 1
       mgos_pppos_set_state(pd, PPPOS_CMD);
       (void) apn;
       break;
